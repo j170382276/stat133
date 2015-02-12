@@ -51,7 +51,7 @@
 # the hw3 directory in the file WR1500MeterMen.rda.
 
 # load the data
-
+load('WR1500MeterMen.rda')
 # The name of the object loaded is wr1500m
 # The time (in the column "times") in these data are recorded in seconds, 
 # and they are seconds over 3 minutes. 
@@ -74,7 +74,8 @@ wr.name <- wr1500m$athlete[wr1500m$year == max(wr1500m$year)]
 # Let's look at the relationship between date and time.
 # Q1c. What type of variable (numeric (continuous or discrete), nominal ordinal)
 # are year and times? (no need to save the output, just look at it)
-#continuous numeric
+#year->numeric(continous) 
+#time->numeric(discrete)
 
 # When we are examining a variable to see how it changes in time,
 # we typically make a line plot, with time on the x-axes and 
@@ -182,6 +183,7 @@ text(wr_1998,210,wr1500m$athlete[which(wr1500m$year == 1998)])
 
 # load( your code here )
 
+load("SummerOlympics2012Ctry.rda")
 
 #Q6 Take a look at the variables in this data frame.
 # What kind of variable is GDP and population?
@@ -223,7 +225,7 @@ GDP_per_person <- SO2012Ctry$GDP/SO2012Ctry$pop
 # SO2012Ctry <- your code here
 SO2012Ctry$GDP_per_person <- GDP_per_person
 # symbols( your code here )
-symbols(log(SO2012Ctry$GDP_per_person),log(SO2012Ctry$pop),circles=SO2012Ctry$Total)
+symbols(log(SO2012Ctry$GDP_per_person),log(SO2012Ctry$pop),circles=sqrt(SO2012Ctry$Total/3.14))
 
 # Q8. It appears that the countries with no medals are circles too.
 # Remake the plot, this time using *only the countries that won medals*. 
@@ -338,7 +340,7 @@ symbols(SO2012Ctry$longitude[wonMedal], SO2012Ctry$latitude[wonMedal],
 # in the Olympics.
 
 # load( )
-
+load('London2012ALL_ATHLETES.rda')
 # There is one observation for each athlete. 
 # (Actually, about 20 athletes have two records if they
 # competed in different sporting events. Let's not worry about that.)
