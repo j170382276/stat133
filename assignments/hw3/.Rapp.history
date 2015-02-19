@@ -1,0 +1,2 @@
+load("/Users/weidongqin/src/stat133/assignments/hw3/London2012ALL_ATHLETES.rda")
+load("/Users/weidongqin/src/stat133/assignments/hw3/rainfallCO.rda")

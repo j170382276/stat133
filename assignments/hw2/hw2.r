@@ -365,7 +365,7 @@ n.athletes <- dim(athletes)[1]
 summary(athletes$Sex)
 # What proportion of the participants were women?
 # frac.women <- your code here
-
+frac.women <- n.wathletes/n.athletes
 # How many sports were there?
 # n.sports <- your code here
 n.sports <-length(unique(athletes$Sport))
@@ -416,7 +416,7 @@ best.plot <- 2
 # increasing height.
 
 # orderSport <- your code here
-OrderSport<- order(table(athletes$Sport))
+orderSport <- table(athletes$Sex,athletes$Sport)[,order(athTab2[1,]+athTab2[2,])]
 # barplot( your code here )
 barplot((orderSport),beside = T)
 
