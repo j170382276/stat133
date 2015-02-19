@@ -416,7 +416,7 @@ best.plot <- 2
 # increasing height.
 
 # orderSport <- your code here
-orderSport<- order(table(athletes$Sport))
+orderSport <- table(athletes$Sex,athletes$Sport)[,order(athTab2[1,]+athTab2[2,])]
 # barplot( your code here )
 barplot((orderSport),beside = T)
 
