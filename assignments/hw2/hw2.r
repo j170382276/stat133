@@ -65,7 +65,7 @@ n.wr <- dim(wr1500m)[1]
 
 # Q1b. Use R commands to find out who currently holds the world
 # record in the men's 1500 meter.
- 
+
 # wr.name <- your code here
 as.character(wr1500m$athlete)
 wr.name <- wr1500m$athlete[wr1500m$year == max(wr1500m$year)]
@@ -365,7 +365,7 @@ n.athletes <- dim(athletes)[1]
 summary(athletes$Sex)
 # What proportion of the participants were women?
 # frac.women <- your code here
-frac.women <- n.wathletes/n.athletes
+
 # How many sports were there?
 # n.sports <- your code here
 n.sports <-length(unique(athletes$Sport))
@@ -437,4 +437,3 @@ barplot(orderSport, beside = T,
 
 # You are DONE.
 # Hope you had fun making increasingly complex and attractive plots with R.
-

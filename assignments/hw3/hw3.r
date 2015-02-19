@@ -234,10 +234,11 @@ SO2012Ctry$GDP_per_person <- GDP_per_person
 # symbols( your code here )
 symbols(log(SO2012Ctry$GDP_per_person),log(SO2012Ctry$pop),circles=sqrt(SO2012Ctry$Total/3.14))
 # Your ggplot command
-ggplot(data=SO2012Ctry,
-        mapping=aes(x=log(GDP_per_person),
-        y=log(pop)))+geom_point(data=SO2012Ctry,
-        aes(size = Total/3.14))
+ggplot(SO2012Ctry, aes(x = pop, y = GDP_per_person))+
+  scale_x_log10()+
+  scale_y_log10()+
+  geom_point(data = SO2012Ctry)+
+  geom_point(aes(size = sqrt(SO2012Ctry$Total)))
 #circles=sqrt(Total/3.14)
 
 # We skip Q8 this time the plot above is already fine.
@@ -249,15 +250,16 @@ ggplot(data=SO2012Ctry,
 # Hint: use annotate(), geom_text(), maybe other functions.
 
 # Your ggplot command:
-top5 <- SO2012Ctry[order(SO2012Ctry$Total,decreasing =T)[1:5],]
-ggplot(data=SO2012Ctry,
-      mapping=aes(x=log(GDP_per_person),
-      y=log(pop)))+geom_point(data=SO2012Ctry,
-      aes(size = Total/3.14))+
+top5<-order(SO2012Ctry$Total, decreasing = TRUE)[1:5]
+ggplot(SO2012Ctry, aes(x = pop, y = GDP_per_person))+
+  scale_x_log10()+
+  scale_y_log10()+
+  geom_point(data = SO2012Ctry)+
+  geom_point(aes(size = sqrt(SO2012Ctry$Total)))+
   annotate("text",  
-           x=log(top5$GDP_per_person),
-           y=log(top5$pop),
-           label = top5$Country,
+           x=SO2012Ctry$pop[top5],
+           y=SO2012Ctry$GDP_per_person[top5],
+           label = SO2012Ctry$ISO[top5],
            colour="blue")+
   labs(title = "medal count by Gdp and Population")+
   xlab("Log of Population")+
