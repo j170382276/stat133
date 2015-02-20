@@ -294,7 +294,7 @@ p
 # Your ggplot commands here.
 wonMedal = SO2012Ctry[SO2012Ctry$Total > 0,
                       c("Total", "Country", "longitude", "latitude")]
-p <- ggplot()+geom_polygon( data=world, aes(x=long, y=lat, group = group),colour="white", fill="grey40" )+
+p <- ggplot()+geom_polygon( data=all_states, aes(x=long, y=lat, group = group),colour="white", fill="grey40" )+
   geom_point(data = wonMedal, aes(x = longitude, y = latitude, size = Total),colour = 'gold')+
   scale_size_continuous(range = c(1, 7), name = "Number of Medals")
 p
