@@ -15,9 +15,11 @@
 
 listLengths <- function(data.list) {
 
-    # your code here
+  ans = sapply(data.list,length)
+  return(ans)
 
 }
+
 
 #### Function 2
 #### Implement the function "powers"
@@ -31,7 +33,13 @@ listLengths <- function(data.list) {
 #              the column names should be : "x", "x^2", "x^3" etc.
 
 powers <- function(x, k){
-
+    x_powers = NULL
+    x_ipowers = NULL
+        for (i in 1:k){
+        x_ipowers <- x^i
+        x_powers <- cbind(x_powers, x_ipowers)
+        }
+    return(x_powers)
 }
 
  
@@ -62,11 +70,22 @@ powers <- function(x, k){
 # If the column names of the input data frame are not "amount", "unit" and "ingredient" the
 # function should stop and print out an error message
 
-# Put your code here
 recipeConversion <- function(recipe){
+  xamount <- c("amount","unit","ingredient")
+  if (sum(xamount %in% names(recipe)) < 3)
+    stop("Invaid: 'amount', 'unit' and 'ingredient'")
+  recipe$unit <- as.character(recipe$unit)
+  matchi_cup <- gsub("cup", recipe$unit, value=FALSE)
+  recipe$amount[matchi_cup] <- 5*round(236.6/5*recipe$amount[matchi_cup])
+  recipe$unit[matchi_cup] <-"ml"
 
+  matchi_oz <- gsub("oz", recipe$unit, value=FALSE) 
+  recipe$amount[matchi_oz] <- 5*round(28.3/5*recipe$amount[matchi_oz])
+  recipe$unit[matchi_oz] <-"gr"
+  
+  recipe_metric <- data.frame(recipe)
+  return(recipe_metric)
 }
-
 
 #### Function #4a
 # Implement the function "bootstrapVarEst"
@@ -90,7 +109,10 @@ recipeConversion <- function(recipe){
 # -- The bootstrap variance is the sample variance of mu_1, mu_2, ..., mu_B
 
 bootstrapVarEst <- function(x, B){
-
+  n <- length(x)
+  x_mean <- replicate(B, mean(sample(x, n, replace = TRUE)))
+  boot.sigma2.est <- var(x_mean)
+  return(boot.sigma2.est)
 }
 
 #### Function #4b
@@ -111,8 +133,14 @@ bootstrapVarEst <- function(x, B){
 #     for this reduced sample calculate the sample mean (get mu_1, mu_2, ..., mu_n)
 # -- The jackknife variance is the sample variance of mu_1, mu_2, ..., mu_n
 
-jackknifeVarEst <- fuction(x){
-
+jackknifeVarEst <- function(x){
+  x_mean = NULL
+  n <- length(x)
+      for (i in 1:n){
+        x_mean[i] <- mean(x[-i])
+      }
+  jack.sigma2.est <- var(x_mean)
+  return(jack.sigma2.est)
 }
 
 #### Function #4c
@@ -127,8 +155,12 @@ jackknifeVarEst <- fuction(x){
 
 # Note: this function calls the previous two functions.
 
-samplingVarEst <- function(  ){
-
+samplingVarEst <- function(x, type="bootstrap"){
+      if (type == "bootstrap")
+        sampling.sigma.est <- bootstrapVarEst(x, 5000)
+      if (type == "jackknife")
+        sampling.sigma.est <- jackknifeVarEst(x)
+      return (sampling.sigma.est)
 }
 
 
