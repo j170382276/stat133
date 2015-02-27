@@ -38,6 +38,7 @@ powers <- function(x, k){
         for (i in 1:k){
         x_ipowers <- x^i
         x_powers <- cbind(x_powers, x_ipowers)
+        colnames(x.powers) <- c("x", paste("x^",2:k, sep = ""))
         }
     return(x_powers)
 }
