@@ -1,0 +1,23 @@
+{
+    "login": "j170382276", 
+    "url": "git@github.com:j170382276/stat133.git", 
+    "name": "Weidong Qin", 
+    "emial": "j170382276@berkeley.edu", 
+    "github_name": "j170382276", 
+    "status": "enrolled", 
+    "grades": {
+        "hw1": {
+            "note": "", 
+            "hash": "7b838bb8f1b94ad94b7d5a58eccdd63ca4bce239", 
+            "earned": 20, 
+            "possible": 20, 
+            "penalty": 0, 
+            "parts": {
+                "hw1": {
+                    "possible": 20, 
+                    "earned": 20
+                }
+            }
+        }
+    }
+}
