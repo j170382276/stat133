@@ -1,5 +1,6 @@
 # Please load in the dataset included in the midterm1 directory. It will be
 # required to perform the following tasks. The dataset includes data for countries in 2012.
+load("SummerOlympics2012Ctry.rda")
 # calculate the mean and the maximum of pop (population) in the dataset. Store these as the
 # variables <mean.pop> and <max.pop> respectively.
 
