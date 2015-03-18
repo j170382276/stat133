@@ -38,7 +38,7 @@ sim.doctors <- function(initial.doctors, n.doctors, n.days, p){
   # 3) convert the non-adopter with probability p
 
   # return the output
-
+1
 }
 
 # When you test your function you have to generate <initial.doctors> and
