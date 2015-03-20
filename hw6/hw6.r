@@ -62,22 +62,22 @@ initial.doctors <- sample(0:1, 10, replace = TRUE, prob = c(0.9,0.1))
 
 # Run your function for at least 5 different values of <p> and plot
 
-trial1 <- sim.doctors(initial.doctors, n.doctors = 100, n.days=2500, p=0.1)
+trial1 <- sim.doctors(initial.doctors, n.doctors = 100, n.days=2000, p=0.1)
 plot(1:ncol(trial1), colSums(trial1),col="black",
      type="l", xlab="Days", ylab="Number of Doctor's Adoption on the Drug",
      main="Stimulation of adoption",
      )
 
-trial2 <- sim.doctors(initial.doctors, n.doctors = 100, n.days=2500, p=0.2)
+trial2 <- sim.doctors(initial.doctors, n.doctors = 100, n.days=2000, p=0.2)
 lines(1:ncol(trial2), colSums(trial2),col="purple")
 
-trial3 <- sim.doctors(initial.doctors, n.doctors = 100, n.days=2500, p=0.3)
+trial3 <- sim.doctors(initial.doctors, n.doctors = 100, n.days=2000, p=0.3)
 lines(1:ncol(trial3), colSums(trial3), col="blue")
 
-trial4 <- sim.doctors(initial.doctors, n.doctors = 100, n.days=2500, p=0.4)
+trial4 <- sim.doctors(initial.doctors, n.doctors = 100, n.days=2000, p=0.4)
 lines(1:ncol(trial4), colSums(trial4), col="green")
 
-trial5 <- sim.doctors(initial.doctors, n.doctors = 100, n.days=2500, p=0.5)
+trial5 <- sim.doctors(initial.doctors, n.doctors = 100, n.days=2000, p=0.5)
 lines(1:ncol(trial5), colSums(trial5), col="red")
 
 
