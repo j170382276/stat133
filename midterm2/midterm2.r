@@ -5,11 +5,11 @@ present <- "yes"
 ## General R commands
 
 # [1 pt]
-# Create [x], a numeric vector of length 1000 with 
+# Create [x], a numeric vector of length 2000 with 
 # entries: 6, 12, 18, etc.
 
 #x <- <your code here>
-x <- seq(6, 6000, by=6)
+x <- seq(6, 12000, by=6)
 
 # [1 pt]
 # Create [y], a logical vector of length 2000 
