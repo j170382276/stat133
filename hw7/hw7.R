@@ -40,25 +40,27 @@ source("computeSJDistance.R")
 # Check the class and dimension of [speeches].  Open the textfile in 
 # an editor and compare it to [speeches]
 
-speeches <- readLines(con=file("stateoftheunion1790-2012.txt"))
 
+con <- file("stateoftheunion1790-2012.txt", "r", blocking = FALSE)
+speeches <- readLines(con)
+class(speeches)
+dim(speeches)
 # The speeches are separated by a line with three stars (***).
 # Create a numeric vector [breaks] with the line numbers of ***.
 # Create the variable [n.speeches] a numeric variable with the number of speeches
 # Question: Does every single *** in the file indicate the beginning of a speech?
 
-breaks <- <your code here>
-n.speeches <- <your code here>
+breaks <- grep("[*][*][*]",speeches)
+first_speech <- grep("George Washington, State of the Union Address, January 8, 1790",speeches)
+last_speech <- grep("Barack Obama, State of the Union Address, January 24, 2012",speeches)
+n.speeches <- last_speech - first_speech + 1
+#n.speeches<-length(breaks-1)
 
-# Hint : look at the file and/or your object speeches, where,
-# each speech has the same format, whererelative to breaks 
-# are the items we pull out next (the names, dates, etc).
-    
 # Use the vector [breaks] and [speeches] to create a 
 # character vector [presidents]
 # with the name of the president delivering the address
-
-presidents <- <your code here>
+presidents <- speeches[breaks[-length(breaks)]+3]
+presidents_uni <- unique(presidents)
 
 # Use [speeches] and the vector [breaks] to create [tempDates], 
 # a character vector with the dates of each speech
@@ -66,28 +68,21 @@ presidents <- <your code here>
 # a numeric vector [speechYr] with the year of each speech, and
 # a character vector [speechMo] with the month of each speech
 # Note: you may need to use two lines of code to create one/both variables.
-# and apply may come in handy.
-    
-tempDates <- <your code here>
-  
-speechYr <- <your code here>
-speechMo <- <your code here>
+
+tempDates <- speeches[breaks[-length(breaks)]+4]
+start_year <- regexpr("[0-9][0-9][0-9][0-9]",tempDates)
+speechYr_temp <- substring(tempDates,start_year,start_year+4)
+speechYr <- as.numeric(speechYr_temp)
+start_month <- regexpr("[[:alpha:]]+",tempDates)
+speechMo <- substring(tempDates,start_month,start_month+attr(start_month,"match.length"))
 
 # Create a list variable [speechesL] which has the full text of each speech.
 # The variable [speechesL] should have one element for each speech.
 # Each element in [speechesL] should be a character vector, where each
 # element in the vector is a character string corresponding to one sentence.
-
-# You already have "breaks" to help index where each speech starts and stops.
-    
 # Note: The line breaks in the text file do not correspond to sentences so you have to
-# -- pull out the text of one speech
 # -- collapse all the lines of a speech into one long character string (use paste())
 # -- and then split up that string on punctuation marks [.?!]
-# When you use paste() pay special attention to the arguments sep and collapse,
-# what do they each do?  The default is collapse=NULL, try also collapse=" ",
-# how does that change the output?
-    
 # Use a for-loop over the number of speeches to do these two steps.
 # We define speechesL as an empty list before the for-loop and in
 # step i of the for-loop you assign the value of speechesL[[i]]
@@ -98,10 +93,11 @@ speeches <- gsub("Mr.", "Mr", speeches)
 speeches <- gsub("Mrs.", "Mrs", speeches)
 speeches <- gsub("U.S.", "US", speeches)
 
-
 speechesL <- list()
-for(i in 1:n.speeches){
-  <your code here>
+for(i in 1:n.speeches)
+{
+  speechesL[[i]] <- paste(speeches[(breaks[i]+6):(breaks[i+1]-2)],collapse = " ")
+  speechesL[[i]] <- unlist(strsplit(speechesL[[i]],"[.?!]"))  
 }
 
 #### Word Vectors 
@@ -128,59 +124,63 @@ for(i in 1:n.speeches){
 # -- cut it into words
 # -- remove all punctuation marks (anything in :punct:)
 # -- make all characters lower case
-# -- Remove the phrase "Applause." and the word "Laughter."
+# -- Remove the phrase "Applause."
 # -- use the function wordStem() from the package SnowballC to 
 #    get the stem of each work
-# -- finally, remove all empty words, i.e. strings that match "" 
+
+
+
+
+
+##################################################################
+#-- finally, remove all empty words, i.e. strings that match "" 
 #    both BEFORE running wordStem() *and* AFTER
+#question, why have ""
+#####################################################################
+
+
+
+
+
 
 #### The function wordStem() returns the "stem" of each word, e.g.:
 #> wordStem(c("national", "nationalistic", "nation"))
 #[1] "nation"      "nationalist" "nation"     
 
 speechToWords = function(sentences) {
-# Input  : sentences, a character string
-# Output : words, a character vector where each element is one word 
-
-  # Eliminate apostrophes and numbers, 
-  # and turn characters to lower case.
-  # <your code here>
-    
-  # Drop the words (Applause. and Laughter.)
-  # <your code here>
-
+  # Input  : sentences, a character string
+  # Output : words, a character vector where each element is one word 
   
-  # Split the text up by blanks and punctuation  (hint: strsplit, unlist)
-  # <your code here>
+  #sentences <- gsub("[[Applause]]", "", sentences);
   
-  # Drop any empty words 
-  # <your code here>
+  word_var <- unlist(strsplit(tolower(gsub("[[:punct:]]","",sentences))," "))
+  #word_var <- unlist(strsplit(gsub(" +"," ",tolower(gsub("[[:punct:]]","",sentences)))," "))
+  #words_var <- gsub("^applause$", "", words);
+  word_var <- wordStem(word_var[order(word_var)])
   
-  # Use wordStem() to stem the words
-  # check the output from wordStem(), do you get all valid words?  any empty ("") strings?
-  # <your code here>
-  
+  word_var <- word_var[grep("^[[:alpha:]]+$",word_var)]
+  return(word_var)
   # return a character vector of all words in the speech
-
 }
-
 
 #### Apply the function speechToWords() to each speach
 # Create a list, [speechWords], where each element of the list is a vector
 # with the words from that speech.
-speechWords <- <your code here>
+speechWords <- sapply(speechesL,speechToWords)
 
-# Unlist the variable speechWords (use unlist()) to get a list of all words in all speeches,
-# then create:
+# Unlist the variable speechWords (use unlist()) to get a list of all words in all speeches, the create:
 # [uniqueWords] : a vector with every word that appears in the speeches in alphabetic order
 
-uniqueWords <- <your code here>
 
-# I get 12965 unique words when I run my code - if you don't try to check that all preceeding
-# steps were ok.  Keep the line below in the code, if you get a different number of
-# unique words and can't figure out why, just continue with the project.
-no.uniqueWords <- length(uniqueWords)
-    
+############################
+#Unique???????????
+#############################
+speechWords_vec <- unique(unlist(speechWords))
+#uniqueWords <- speechWords_vec[order(speechWords_vec)]
+uniqueWords <- speechWords_vec[order(speechWords_vec)]
+
+
+
 # Create a matrix [wordCount]
 # the number of rows should be the same as the length of [uniqueWords]
 # the number of columns should be the same as the number of speeches (i.e. the length of [speechesL])
@@ -200,23 +200,25 @@ no.uniqueWords <- length(uniqueWords)
 # > names(counts)
 # [1] "a" "b" "c"
 
+# You may want to use an apply statment to first create a list of word vectors, one for each speech.
 
 # your code to create [wordMat] here:
+#/??????????????????????
 
-emptyVec = rep(0, length(uniqueWords))
-names(emptyVec) = uniqueWords
+wordMat <- sapply(speechWords,function(x)
+{
+  
+  return(table(c(x,uniqueWords))-1)
+})
 
-# You may want to use an apply statment to first create a list of word vectors, one for each speech.
-# Think about what you want to do for each element, maybe put that in a little function and call in an lapply statement
-# wordVecs <- <your code here>
+colnames(wordMat) <- c(as.character(1:222))
 
-# Create a matrix out of wordVecs:
-# wordMat <- <your code here>
 
 # Load the dataframe [speechesDF] which has two variables,
 # president and party affiliation (make sure to keep this line in your code):
 
-  load("speeches_dataframe.Rda")
+load("speeches_dataframe_new.Rda")
+#load("/Users/yifeiwang/stat133-hw/stat133/hw7/speeches_dataframe_new.Rda")
 
 ## Now add the following variables to the  dataframe [speechesDF]:
 # yr - year of the speech (numeric) (i.e. [speechYr], created above)
@@ -226,12 +228,15 @@ names(emptyVec) = uniqueWords
 # chars - number of letters in the speech (use [speechWords] to calculate)
 # sent - number of sentences in the speech (use [speechesL] to calculate this)
 
-words <- <your code here>
-chars <- <your code here>
-sentences <- <your code here>
+words <- sapply(speechWords,length)
+chars <- sapply(speechWords,function(x){
+  return(length(unlist(strsplit(x,""))))
+  
+})
+sentences <- sapply(speechesL,length)
 
 # Update the data frame
-speechesDF <- <your code here>
+speechesDF <- cbind(speechesDF,speechYr,speechMo,words,chars,sentences)
 
 ######################################################################
 ## Create a matrix [presidentWordMat] 
@@ -239,9 +244,31 @@ speechesDF <- <your code here>
 # and that colum is the sum of all the columns corresponding to speeches make by said president.
 
 # note that your code will be a few lines...
+
+n.speech.pres <- as.vector(table(presidents)[presidents_uni])
+
+colstart <- rep(1,length(n.speech.pres))
+for(i in 2:length(n.speech.pres))
+{
+  colstart[i] <- colstart[i-1]+n.speech.pres[i-1]
+}
+
+colend <-  colstart+n.speech.pres-1
+
+presidentWordMat <- matrix(,length(uniqueWords),length(presidents_uni))
+
+for(i in 1:length(presidents_uni))
+{
+  if(colstart[i] == colend[i] )
+    presidentWordMat[,i] = wordMat[,colstart[i]:colend[i]]
+  else
+    presidentWordMat[,i] = rowSums(wordMat[,colstart[i]:colend[i]])
   
-presidentWordMat <- <your code here> 
+  # print(i)
+  #print(colstart[i]:colend[i])
   
+}
+
 # At the beginning of this file we sourced in a file "computeSJDistance.R"
 # It has the following function:
 # computeSJDistance = (tf, df, terms, logdf = TRUE, verbose = TRUE)
@@ -249,51 +276,65 @@ presidentWordMat <- <your code here>
 # terms - a character vector of all the unique words, length numTerms (i.e. uniqueWords)
 # df - a numeric vector, length numTerms, number of docs that contains term (i.e. df)
 # tf - a matrix, with numTerms rows and numCols cols (i.e. the word matrix)
-  
+
 # Document Frequency
 # [docFreq]: vector of the same length as [uniqueWords], 
 # count the number of presidents that used the word
 
-  docFreq <- <your code here>
-    
+docFreq <- apply(presidentWordMat,1,function(x) (length(presidents_uni)-sum(x==0)))
+
+
 # Call the function computeSJDistance() with the arguments
 # presidentWordMat, docFreq and uniqueWords
 # and save the return value in the matrix [presDist]
 
-presDist <- computeSJDistance( < insert arguments here >)
+presDist <- computeSJDistance(presidentWordMat,docFreq,uniqueWords)
 
 ## Visuzlise the distance matrix using multidimensional scaling.
 # Call the function cmdscale() with presDist as input.
 # Store the result in the variable [mds] by 
 
-mds <- <your code here>
+mds <- cmdscale(presDist)
 
 # First do a simple plot the results:
 plot(mds)
+pdf("one")
+
 
 # Customize this plot by:
 # -- remove x and y labels and put the title "Presidents" on the plot
 # -- color the observations by party affiliation 
 # -- using the presidents name as a plotting symbol
-
+plot(mds, main = "Presidents",xlab = "",ylab="")
 # Create a variable presParty, a vector of length 41 where each element
 # is the party affiliation and the names attribute has the names of the presidents.
 # Hint: the info is in speechesDF$party and speechesDF$Pres
 
-presParty <- <your code here>
-  
+
+temp <- unique(speechesDF$Pres)
+temp <- temp[order(unique(speechesDF$Pres))]
+presParty <- sapply(temp,function(x){
+  party <- as.vector(speechesDF$party)
+  pres <- as.vector(speechesDF$Pres)
+  return (unique(party[which(pres == x)]))
+})
+presParty <- presParty[unique(speechesDF$Pres)]
+
+names(presParty) <- unique(speechesDF$Pres)
+
 # use rainbow() to pick one unique color for each party (there are 6 parties)
 
-cols <- <your code here>
-
+cols <- rainbow(6)
+names(cols) <- unique(presParty)
 # Now we are ready to plot again.
 # First plot mds by calling plot() with type='n' (it will create the axes but not plot the points)
 # you set the title and axes labels in the call to plot()
 # then call text() with the presidents' names as labels and the color argument
 # col = cols[presParty[rownames(presDist)]]
-  
-plot(<your code here>)
-text(<your code here>)
+presName <-unique(speechesDF$Pres)
+plot(mds, type = "n", main = "president", xlab = "", ylab = "")
+text(mds,labels = presName,cex =0.7, pos = 1,col = cols[presParty[names(presParty)]])
+#text(mds,labels = presName, cex =0.7, pos = 2.5, col = cols[apresParty])
 
 ### Use hierarchical clustering to produce a visualization of  the results.
 # Compare the two plots.
@@ -309,6 +350,16 @@ plot(hc)
 # x-axis: speech year, y-axis: average sentence length (word/sent)
 
 # your plot statements below:
+plot(speechesDF$speechYr,speechesDF$sentences)
+plot(speechesDF$speechYr,speechesDF$words)
+plot(speechesDF$speechYr,speechesDF$chars)
+plot(speechesDF$speechYr,speechesDF$chars/speechesDF$words)
+plot(speechesDF$speechYr,(speechesDF$words/speechesDF$sentences))
+
+
+
+
+
 
 
 
