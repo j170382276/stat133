@@ -1,0 +1,20 @@
+Total: 16/20
+
+Function 1
+5/5
+OK. But you can avoid the for loop with sum(grepl(…))
+
+Function 2
+5/5
+
+
+Function 3
+5/5
+
+Function 4
+1/5
+To match digits you need “[[:digit:]]” (i.e. double square brackets); similarly
+for pun cation use “[[:punch:]]” 
+Check the solutions for the next steps. 
+
+
