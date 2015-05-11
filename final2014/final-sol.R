@@ -62,7 +62,9 @@ x <- 5*(1:1000)
  # y <- <your code here>
   
  y <- ifelse(x%%10, F, T)
-  
+#ifelse(test,yes,no)  
+
+
 # [1 pt]
 # Create [z], a numeric vector of length 111 with entries
 # that are drawn from a standard normal distribution (hint: rnorm)
@@ -78,6 +80,7 @@ set.seed(42)
   set.seed(31415)
 #v <- <your code here>
  v <- sample(2*(2:111))
+#sample use for create random
   
 # [1 pt]
 # Create [w], a random permutation of the numeric values of a deck of cards
@@ -85,7 +88,8 @@ set.seed(42)
 set.seed(2718)
 #w <- <your code here>
  w <- sample(rep(1:13, each=4))
-  
+#sample use for create random
+
 # [1 pt]
 # Create [m], a matrix of size 10x10 with entries that are 
 # Exponential random variables (hint: rexp) with rate 3
@@ -100,6 +104,7 @@ set.seed(344)
   set.seed(71)
 #<your code here>
 l <- list(); for(i in 1:12) l[[i]] <- rpois(n=100, lambda=5)
+#rpois for Passion
 
 # For the next few tasks you will use the data frame family (size 14x5)
 # LEAVE AS IS:
@@ -120,6 +125,7 @@ fm <- family[ family$gender=='m' & family$height >= 72 , ]
 #f3 <- <your code here>
   
  f3 <- family[ substr(family$name, 1, 1)=="T" , ]
+#substr(x, start, stop)
 
 # [1 pt]
 # Create [f4] a subset of family with just the youngest individual (so just one row)
@@ -161,7 +167,7 @@ t <- table(infants$ed[ infants$married=="Married" & infants$parity==1])
 # The axes labels should be "Petal Length" and "Petal Width",
 # Color the plotting symbol by Species (any 3 colors)
 
- plot(iris$Petal.Length, iris$Petal.Width, xlab="Petal Length", ylab="Petal Width", col=as.numeric(iris$Species))
+ plot(iris$Petal.Length,iris$Petal.Width, xlab="Petal Length", ylab="Petal Width", col=as.numeric(iris$Species))
 
 # [3 pt]
 # Make a scatterplot of ( sepal length / petal length) as a function of index (order)
@@ -201,6 +207,7 @@ load("Cache500.rda")
 
 #first.cache <- <your code here>
 first.cache <- sapply(Cache500, "[", 1)
+#first.cache <- unlist(lapply(Cache500,function(x){return(x[1])}))
 
 # [3 pts]
 # Create [mean.cache], a vector of length 500 where each entry is the mean 
@@ -233,7 +240,9 @@ mean.long.cache <-  sapply(Cache500, function(x){ if(length(x)>=50) return(mean(
 # Create a variable [max.petal.width] _a numeric vector of length 3_
 # that has the maximum petal length for each iris species.
 max.petal.width <- as.vector(by(iris$Petal.Width, iris$Species, max))
-
+#max.petal.width <- c(max(iris$Petal.Length[1:50]),
+#max(iris$Petal.Length[51:100]),
+#max(iris$Petal.Length[101:150]))
 #################################################################
 ##### PART IV : functions [20 pts]
 
@@ -272,7 +281,15 @@ firstColToNames <- function(m){
      return(m)
   }
 }
-    
+#firstColToNames <- function( m ){
+
+
+#tem.m <- m[,seq(2,ncol(m))]
+#row.names(tem.m) <- m[,1]
+#return(tem.m)
+
+#}
+
 # [6 pts]
 # Write a function [longerRange()] with
 # Input [m1 and m2] : two numeric matrices or data frames, don't have to have the same dimension 
@@ -337,6 +354,7 @@ set.seed(123456)
 dice_sum <- function(k=2, B=100){
    replicate(B, sum(sample(1:6, size=k, replace=T)) )
 }
+#replicate(n, expr, simplify = "array")
 
 # [5 pts]
 # Lets run four simulations:
@@ -392,12 +410,14 @@ phrases <- c("coat", "cat", "ct", "mat", "Sat!", "Now?", "match", "How much? $10
 # a match to "at", anywhere 
 #text1 <- <your code here>
 text1 <- grep("at", phrases)
+#text1 <- phrases[grep('at',phrases)]
 
 # [2 pts]
 # Create a vector [text2] that lists the elements in phrases that have 
 # a match to "at", _at the end of the phrase_ 
 #text2 <- <your code here>
 text2 <- grep("at\\>", phrases)
+#text2 <- phrases[grep('at$',phrases)]
 
 # [4 pts]
 # Create a vector [text3] that lists the elements in phrases that have 
@@ -405,6 +425,7 @@ text2 <- grep("at\\>", phrases)
 # and anything before or after that match
 #text3 <- <your code here>
 text3 <- grep(".+((at){2,}).+", phrases)
+#text3 <- phrases[grep('[a][t][a][t]',phrases)]
 
 # [3 pts]
 # Create a vector [tests] that is of length 200 and has the entries
@@ -434,7 +455,9 @@ minchin <- "And try as hard as I like, A small crack appears In my diplomacy-dik
 #minchin.split <- <your code here>
   
 minchin.split <- tolower(unlist(strsplit(minchin, " ")))
-
-  
+#tolower convert upper-case characters in a character vector to lower-case
+#unlist(x, recursive = TRUE, use.names = TRUE)  
+#Given a list structure x, unlist simplifies it to produce a vector which contains 
+#all the atomic components which occur in x.
 #################################################################
 
