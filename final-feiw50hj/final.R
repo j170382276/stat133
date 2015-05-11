@@ -221,23 +221,34 @@ load("rainfallCO.rda")
 # Create [max.rain], a vector where each entry is the _maximum_ element of the
 # corresponding vector in the list rain
 
-#max.rain <- <your code here>
-max.rain <- sapply(rain,max)
-    
+max.rain <- sapply(rain, max)
+
+
 # [5 pts]
 # Create [max.diff.rain], a vector of length 5 where each entry is the 
 # __maximum absolute difference__ in rainfall on two consecutive days
 # Hint: you can use the function [diff()] to get the difference between entry i and i+1 in a vector 
 # and the function [abs()] for absolute value
-# max.diff.rain <- <your code here>
-max.diff.rain<-sapply(rain,abs(diff(rain)))
+
+
+max.diff.rain <- sapply(sapply(rain, diff), max)
+
 
 # [5 pts]
 # Create [prop.rain], a vector of length 5 where each entry is the 
 # number of rain days (i.e. rain > 0) as a function of total days
 
-#prop.rain <- <your code here>
-prop.rain<-sapply(rain,function(x){ if(length(x)>=5) return(mean(x)) else return(NA)})
+sumRain <- function(x) {
+  total = 0
+  for(i in 1:length(x)) {
+    if (x[i] != 0) {
+      total = total + 1
+    }
+  }
+  return (total / length(x))
+}
+
+prop.rain <- sapply(rain, sumRain)
 
 
 # [3 pts]
@@ -245,7 +256,7 @@ prop.rain<-sapply(rain,function(x){ if(length(x)>=5) return(mean(x)) else return
 # in a separate panel (there will be one empty panel)
 # use an apply statment to the the plotting
 par(mfrow=c(2,3))
-hist(as.numeric(rain))
+sapply(rain, hist)
 
 #################################################################
 ##### PART IV : functions [20 pts]
@@ -262,15 +273,14 @@ hist(as.numeric(rain))
 #   a vector of n normal random variables with mean=mean and sd=sd
 #   an optional plot
 
-#function <- GenNorm(){
-#
-#}
-function<-GenNorm(){
-  mean=0
-  sd=1
-  n=1000
-  hist(mean,sd)
+GenNorm <- function(mean = 0, sd = 1, n = 1000, plot.hist = TRUE){
+  vec <- rnorm(mean = mean, sd = sd, n = n)
+  if(plot.hist == TRUE) {
+    hist(vec)
+  }
+  return(vec)
 }
+
 
 # [6 pts]
 # Write a function [standardizeVar] with
@@ -283,14 +293,24 @@ function<-GenNorm(){
 #     we standardize by subtracting the mean of the column/row and dividing by the sd of the column/row
 
 
-## standardizeVar <- function(m, cols=TRUE){
-##   <your code here>  
-## }
 standardizeVar <- function(m, cols=TRUE){
-  if(length(dim(m))!=2) print("m is not a matrix or dataframe")
-  else{if (cols==TRUE) mean(as.character(m[,1])/as.character(m[1,]))-sd(as.character(m[,1])/as.character(m[1,]))
+  m.new = m
+  if(cols == TRUE) {
+    for(i in 1:ncol(m)) {
+      sub = mean(m[,i])
+      div = sd(m[,i])
+      m.new[,i] = (m[,i] - sub) / div
+    }
+  } else {
+    for(i in 1:nrow(m)) {
+      sub = mean(m[i,])
+      div = sd(m[i,])
+      m.new[i,] = (m[i,] - sub) / div
+    }
+  }
+  return(m.new)
 }
-}
+
 
 # [8 pts]
 # Write a function [PermDiff()] that takes
@@ -310,12 +330,22 @@ standardizeVar <- function(m, cols=TRUE){
 
 
 
-## PermDiff <- function(cases, controls, k=5000){
-##   <your code here>
-  
-## }
+PermDiff <- function(cases, controls, k=5000){
+  vec = vector(length = k)
+  for(i in 1:k) {
+    cases.length = length(cases)
+    controls.length = length(conrols)
+    total.length = cases.length + controls.length
+    temp.total = c(cases, controls)
+    temp.total = sample(x = temp.total, replace = FALSE, size = total.length)
+    temp.cases = temp.total[c(1:cases.length)]
+    temp.controls = temp.total[c(cases.length + 1: total.length)]
+    vec[i] <- mean(temp.cases) - mean(temp.controls)
+  }
+  return(vec)
+}
 
-PermDiff <- function(cases, controls, k=5000){replicate(k, mean(cases)-mean(controls) )}
+
 
 #################################################################
 ##### PART V : simulations [15 pts]
@@ -347,14 +377,31 @@ set.seed(123456)
 #    generate a ticket for each player in turn, if they had the winning numbers 
 #    increase the counter by 1
 
-#function <- NumJackpot(k, B){
-#  <your code here>
-#}
+numJackpot <- function(k, B){
+  toRtn = vector(length = B)
+  for(i in 1:B) {
+    counter = 0
+    jackpot = sample((1:19), size = 3, replace = FALSE)
+    jackpot = sort(jackpot)
+    for(j in 1:k) {
+      rand.nums = sample((1:19), size = 3, replace = FALSE)
+      rand.nums = sort(rand.nums)
+      if(identical(jackpot, rand.nums)) {
+        counter = counter + 1
+      }
+    }
+    toRtn[i] = counter
+  }
+  return(toRtn)
+}
 
 # For B = 5000 and each value of k = 10000, 50000, 100000, 500000
 # Plot a histogram of the output from NumJackpot (i.e. four histograms)
 
-# <your plot here>
+par(mfrow=c(2,2))
+for(i in (10000, 50000, 100000, 500000)) {
+  hist(numJackpot(i, 5000))
+}
 
 #################################################################
 ##### PART VI : string manipulation and regular expressions [20 pts]
@@ -364,44 +411,278 @@ phrases <- c("stone", "steel", "sled", "Star", "silly", "cat", "dog", "catcat", 
 # [2 pts]
 # Create a vector [text1] that lists the elements in phrases that start
 # with "st" (case doesn't matter)
-#text1 <- <your code here>
-text1 <- grep("St",ignore.case = T, phrases)
+text1 <- grep("^st", tolower(phrases))
+
 
 # [1 pt]
 # Create a vector [text2] that lists the elements in phrases that have 
 # a match to "ar", _at the end of the phrase_ 
-#text2 <- <your code here>
-text2<-grep("ar\\>", phrases)
+text2 <- grep("ar$", phrases)
+
 
 # [2 pts]
 # Create a vector [text3] that lists the elements in phrases that have 
 # a match to any multiple of "ta"
-#text3 <- <your code here>
-text3<-grep('[t][a]', phrases)
+text3 <- unlist(grep("ta+", phrases))
+
 # [2 pts]
 # Create a vector [text4] that has the first 3 characters of each element in phrases
 
-#text4 <- <your code here>
-text4<-grep(length(phrases)==3,phrases)
+text4 <- sapply(phrases, substr, 1, 3)
+
 
 # [2 pts]
 # Create a vector [text5] that has all the elements in phrases that have a punctuation mark 
-#text5 <- <your code here>
-text5<-grep('[?!]', phrases)
+text5 <- grep("[:punct:]", phrases)
+
 
 # [2 pts]
 # Create a vector [phrases2] where you have replaced the first instance of the letter "a" in each word with "@"
-# phrases2 <- <your code here>
-phrases2<-paste(phrases, collapse="@")
+phrases2 <- sub(pattern = "a", replacement = "@", x = phrases)
+
 
 # [2 pts]
 dna <- c("AGGATGATT", "AGCCTTAGC", "AGAGAGCT", "AGTTTCGTA", "CGTGGTGC", "CTAAGTGAC", "GTGGGACC", "GGTAGAGAC", "TAGATTACC")
 # Create a vector [match1] with the index for all matches to "A*T" or "G*T"
-# match1 <- <your code here>
-match1 <- grep("[AT][GT]", dna)
+match1 <- unlist(union(grep("A*T", dna), grep("G*T", dna)))
+
 # [2 pts]
 # Create a vector [dna2] where you have removed all entries whose length is not a multiple of 3
-# dna2 <- <your code here>
-dna2 <- tolower(unlist(strsplit(dna, " ")))
+dna2 <- dna[c(grep("^(...)+$", dna))]# For the next few tasks you will use the list rain
+# (list of length 5, each element is a numeric vector of various lengths)
+# LEAVE AS IS:
+load("rainfallCO.rda")
+
+# [2 pts]
+# Create [max.rain], a vector where each entry is the _maximum_ element of the
+# corresponding vector in the list rain
+
+max.rain <- sapply(rain, max)
+
+
+# [5 pts]
+# Create [max.diff.rain], a vector of length 5 where each entry is the 
+# __maximum absolute difference__ in rainfall on two consecutive days
+# Hint: you can use the function [diff()] to get the difference between entry i and i+1 in a vector 
+# and the function [abs()] for absolute value
+
+
+max.diff.rain <- sapply(sapply(rain, diff), max)
+
+
+# [5 pts]
+# Create [prop.rain], a vector of length 5 where each entry is the 
+# number of rain days (i.e. rain > 0) as a function of total days
+
+sumRain <- function(x) {
+  total = 0
+  for(i in 1:length(x)) {
+    if (x[i] != 0) {
+      total = total + 1
+    }
+  }
+  return (total / length(x))
+}
+
+prop.rain <- sapply(rain, sumRain)
+
+
+# [3 pts]
+# Make a plot with 6 panels and plot the histogram of the rainfall for each weather station
+# in a separate panel (there will be one empty panel)
+# use an apply statment to the the plotting
+par(mfrow=c(2,3))
+sapply(rain, hist)
+
 #################################################################
+##### PART IV : functions [20 pts]
+
+# [6 pts]
+# Write a function, [GenNorm()] which generates a vector of random normal
+# plots a histogram, if desired.
+# Input :
+#   mean (the mean of the normal), default 0
+#   sd (the standard deviation), default 1
+#   n (the number of observations), default 1000
+#   plot.hist (a logical variable, should we plot a histogram), default TRUE
+# Output: 
+#   a vector of n normal random variables with mean=mean and sd=sd
+#   an optional plot
+
+GenNorm <- function(mean = 0, sd = 1, n = 1000, plot.hist = TRUE){
+  vec <- rnorm(mean = mean, sd = sd, n = n)
+  if(plot.hist == TRUE) {
+    hist(vec)
+  }
+  return(vec)
+}
+
+
+# [6 pts]
+# Write a function [standardizeVar] with
+# Input :
+#     [m] : a numeric matrix
+#     [cols] : TRUE or FALSE (default TRUE)
+# Output :
+#     a matrix of the same size as [m] where if cols==TRUE the columns have been standardized
+#     and if cols==FALSE the rows have been standardized
+#     we standardize by subtracting the mean of the column/row and dividing by the sd of the column/row
+
+
+standardizeVar <- function(m, cols=TRUE){
+  m.new = m
+  if(cols == TRUE) {
+    for(i in 1:ncol(m)) {
+      sub = mean(m[,i])
+      div = sd(m[,i])
+      m.new[,i] = (m[,i] - sub) / div
+    }
+  } else {
+    for(i in 1:nrow(m)) {
+      sub = mean(m[i,])
+      div = sd(m[i,])
+      m.new[i,] = (m[i,] - sub) / div
+    }
+  }
+  return(m.new)
+}
+
+
+# [8 pts]
+# Write a function [PermDiff()] that takes
+# Inputs
+#    [cases] : a numeric vector 
+#    [controls] : a numeric vector 
+#    [k] : a scalar, the number of permutations, default=5000
+
+#    Assume that [cases] was of length k and [controls] of length m
+#    Now select at random k individuals from the whole sample (i.e. all k+m observations)
+#    and assign them to be cases, and the remaining m individuals as controls
+#    Calculate the value [mean(cases)-mean(controls)] for each of these new samples
+
+# Output
+#    A vector of length k where each element is the value 
+#    mean(cases)-mean(controls) for one permutation
+
+
+
+PermDiff <- function(cases, controls, k=5000){
+  vec = vector(length = k)
+  for(i in 1:k) {
+    cases.length = length(cases)
+    controls.length = length(conrols)
+    total.length = cases.length + controls.length
+    temp.total = c(cases, controls)
+    temp.total = sample(x = temp.total, replace = FALSE, size = total.length)
+    temp.cases = temp.total[c(1:cases.length)]
+    temp.controls = temp.total[c(cases.length + 1: total.length)]
+    vec[i] <- mean(temp.cases) - mean(temp.controls)
+  }
+  return(vec)
+}
+
+
+
+#################################################################
+##### PART V : simulations [15 pts]
+
+# leave this here:
+set.seed(123456)
+
+# Simulate a simplified lottery and return the number of people who share the
+# jackpot.
+
+# Setup:
+# Each player can pick 3 numbers from the numbers 1 through 19 (no duplicates)
+# There are [k] players that buy a ticket.
+# All player with the winning numbers share the jackpot
+
+# Write a function NumJackpot with:
+
+# Input
+#    k : number of players
+#    B : number of lottery games
+
+# Output:
+#    n.jackpot : vector of length B where each entry is the number of people
+#                who shared the jackpot in that game
+
+# So in each of the B games you have to :
+#    generate the winning numbers
+#    set a counter for jackpot winners to 0
+#    generate a ticket for each player in turn, if they had the winning numbers 
+#    increase the counter by 1
+
+numJackpot <- function(k, B){
+  toRtn = vector(length = B)
+  for(i in 1:B) {
+    counter = 0
+    jackpot = sample((1:19), size = 3, replace = FALSE)
+    jackpot = sort(jackpot)
+    for(j in 1:k) {
+      rand.nums = sample((1:19), size = 3, replace = FALSE)
+      rand.nums = sort(rand.nums)
+      if(identical(jackpot, rand.nums)) {
+        counter = counter + 1
+      }
+    }
+    toRtn[i] = counter
+  }
+  return(toRtn)
+}
+
+# For B = 5000 and each value of k = 10000, 50000, 100000, 500000
+# Plot a histogram of the output from NumJackpot (i.e. four histograms)
+
+par(mfrow=c(2,2))
+for(i in (10000, 50000, 100000, 500000)) {
+  hist(numJackpot(i, 5000))
+}
+
+#################################################################
+##### PART VI : string manipulation and regular expressions [20 pts]
+
+phrases <- c("stone", "steel", "sled", "Star", "silly", "cat", "dog", "catcat", "why?", "really!", "how much?", "atatat", "bar", "car")
+
+# [2 pts]
+# Create a vector [text1] that lists the elements in phrases that start
+# with "st" (case doesn't matter)
+text1 <- grep("^st", tolower(phrases))
+
+
+# [1 pt]
+# Create a vector [text2] that lists the elements in phrases that have 
+# a match to "ar", _at the end of the phrase_ 
+text2 <- grep("ar$", phrases)
+
+
+# [2 pts]
+# Create a vector [text3] that lists the elements in phrases that have 
+# a match to any multiple of "ta"
+text3 <- unlist(grep("ta+", phrases))
+
+# [2 pts]
+# Create a vector [text4] that has the first 3 characters of each element in phrases
+
+text4 <- sapply(phrases, substr, 1, 3)
+
+
+# [2 pts]
+# Create a vector [text5] that has all the elements in phrases that have a punctuation mark 
+text5 <- grep("[:punct:]", phrases)
+
+
+# [2 pts]
+# Create a vector [phrases2] where you have replaced the first instance of the letter "a" in each word with "@"
+phrases2 <- sub(pattern = "a", replacement = "@", x = phrases)
+
+
+# [2 pts]
+dna <- c("AGGATGATT", "AGCCTTAGC", "AGAGAGCT", "AGTTTCGTA", "CGTGGTGC", "CTAAGTGAC", "GTGGGACC", "GGTAGAGAC", "TAGATTACC")
+# Create a vector [match1] with the index for all matches to "A*T" or "G*T"
+match1 <- unlist(union(grep("A*T", dna), grep("G*T", dna)))
+
+# [2 pts]
+# Create a vector [dna2] where you have removed all entries whose length is not a multiple of 3
+dna2 <- dna[c(grep("^(...)+$", dna))]z
 
