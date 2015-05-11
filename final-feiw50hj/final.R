@@ -443,10 +443,8 @@ match1 <- grep("A.T|G.T",dna)
 # [2 pts]
 # Create a vector [dna2] where you have removed all entries whose length is not a multiple of 3
 multiple.of.3 <- function(x){
-  
   if(length(x)%%3==0){
-    temp <- 
-  }
+    temp <- }
 }
 dna2 <- sapply(dna,multiple.of.3)
 
