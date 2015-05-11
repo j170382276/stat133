@@ -398,7 +398,7 @@ phrases2<-paste(phrases, collapse="@")
 dna <- c("AGGATGATT", "AGCCTTAGC", "AGAGAGCT", "AGTTTCGTA", "CGTGGTGC", "CTAAGTGAC", "GTGGGACC", "GGTAGAGAC", "TAGATTACC")
 # Create a vector [match1] with the index for all matches to "A*T" or "G*T"
 # match1 <- <your code here>
-match1 <- grep("A\\>", dna)
+match1 <- grep("[AT][GT]", dna)
 # [2 pts]
 # Create a vector [dna2] where you have removed all entries whose length is not a multiple of 3
 # dna2 <- <your code here>
