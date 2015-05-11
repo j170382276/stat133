@@ -134,7 +134,7 @@ cw3<-mean(ChickWeight$weight[ChickWeight$Time==0])
 #cw4 <- <your code here>
 cw4<-sample(ChickWeight,size=200,replace=T)
 
-for the next two tasks you will use the data frame infants (size 1236x15)
+#for the next two tasks you will use the data frame infants (size 1236x15)
 # LEAVE AS IS:
 load("KaiserBabies.rda") 
 
