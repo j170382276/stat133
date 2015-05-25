@@ -296,7 +296,7 @@ GenNorm <- function(mean=0,sd=1,n=1000,plot.hist=TRUE){
 
 
 standardizeVar <- function(m, cols=TRUE){
-  browser()
+  #browser()
   if (cols==TRUE){
     for (i in 1:ncol(m)){
       for (j in i:nrow(m)){
